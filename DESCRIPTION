@@ -1,0 +1,20 @@
+Package: shinyfilter
+Type: Package
+Title: Use Interdependent Filters on Table Columns in Shiny Apps
+Description: Allows to connect 'selectizeInputs' widgets as filters to a 'reactable' table. 
+  As known from spreadsheet applications, column filters are interdependent, so each 
+  filter only shows the values that are really available at the moment based on 
+  the current selection in other filters. Filter values currently not available 
+  (and also those being available) can be shown via popovers or tooltips.
+Version: 0.1.0
+Authors@R: person("Joachim", "Zuckarelli", role = c("aut", "cre"), email = "joachim@zuckarelli.de", comment = c(ORCID="0000-0002-9280-3016"))
+Maintainer: Joachim Zuckarelli <joachim@zuckarelli.de>
+Depends: R (>= 3.5.0)
+License: GPL-3
+Imports: shiny, reactable, shinyBS, shinyjs, stringr
+Repository: CRAN
+BugReports: https://github.com/jsugarelli/shinyfilter/issues
+URL: https://github.com/jsugarelli/shinyfilter/
+Encoding: UTF-8
+ByteCompile: true
+RoxygenNote: 7.1.1

@@ -1,0 +1,13 @@
+navbar:
+  structure:
+    left:  [home, intro, reference, articles, tutorials, news, github]
+  components:
+    twitter:
+      icon: "fab fa-twitter fa-lg"
+      href: https://twitter.com/jsugarelli
+authors:
+  Joachim Zuckarelli:
+    href: "https://twitter.com/jsugarelli"
+home:
+  title: shinyfilter - Interdependent Filters on Table Columns in Shiny Apps
+  description: As known from spreadsheet applications, filters are interdependent, so each filter only shows the values that are really available at the moment based on the current selection in other filters. Filter values currently not available (and also those being available) can be shown via popovers or tooltips.
