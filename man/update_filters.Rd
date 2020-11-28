@@ -35,111 +35,110 @@ See below for a full example of a shiny app using
    for a comprehensive \code{shinyfilter} tutorial.
 }
 \examples{
+if(interactive()) {
+  library(shiny)
+  library(reactable)
+  library(shinyfilter)
 
-library(shiny)
-library(reactable)
-library(shinyfilter)
+  cars_csv <- system.file("cars.csv", package="shinyfilter")
 
-cars_csv <- system.file("cars.csv", package="shinyfilter")
+  cars <- read.csv(cars_csv, stringsAsFactors = FALSE, header = TRUE, encoding = "UTF-8")
 
-cars <- read.csv(cars_csv, stringsAsFactors = FALSE, header = TRUE, encoding = "UTF-8")
+  app = shinyApp(
+    ui <- fluidPage(
+      titlePanel("Cars Database"),
+      sidebarLayout(
+        sidebarPanel(
+          width = 2,
 
-app = shinyApp(
-  ui <- fluidPage(
-    titlePanel("Cars Database"),
-    sidebarLayout(
-      sidebarPanel(
-        width = 2,
+          selectizeInput(inputId = "sel_manufacturer", label = "Manufacturer",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$manufacturer))),
 
-        selectizeInput(inputId = "sel_manufacturer", label = "Manufacturer",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$manufacturer))),
+          selectizeInput(inputId = "sel_year", label = "Year",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$year))),
 
-        selectizeInput(inputId = "sel_year", label = "Year",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$year))),
+          selectizeInput(inputId = "sel_fuel", label = "Fuel",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$fuel))),
 
-        selectizeInput(inputId = "sel_fuel", label = "Fuel",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$fuel))),
+          selectizeInput(inputId = "sel_condition", label = "Condition",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$condition))),
 
-        selectizeInput(inputId = "sel_condition", label = "Condition",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$condition))),
+          selectizeInput(inputId = "sel_size", label = "Size",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$size))),
 
-        selectizeInput(inputId = "sel_size", label = "Size",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$size))),
+          selectizeInput(inputId = "sel_transmission", label = "Transmission",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$transmission))),
 
-        selectizeInput(inputId = "sel_transmission", label = "Transmission",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$transmission))),
+          selectizeInput(inputId = "sel_color", label = "Color",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$paint_color))),
 
-        selectizeInput(inputId = "sel_color", label = "Color",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$paint_color))),
-
-        selectizeInput(inputId = "sel_type", label = "Type",
-                       multiple = TRUE, options = list(onChange = event("ev_click")),
-                       choices = sort(unique(cars$type))),
-        use_tooltips(background = "#'  1B3F8C", foreground = "#'  FFFFFF")
-      ),
-      mainPanel(
-        reactableOutput(outputId = "tbl_cars")
+          selectizeInput(inputId = "sel_type", label = "Type",
+                         multiple = TRUE, options = list(onChange = event("ev_click")),
+                         choices = sort(unique(cars$type))),
+          use_tooltips(background = "#'  1B3F8C", foreground = "#'  FFFFFF")
+        ),
+        mainPanel(
+          reactableOutput(outputId = "tbl_cars")
+        )
       )
-    )
-  ),
+    ),
 
 
-  server = function(input, output, session) {
+    server = function(input, output, session) {
 
-    r <- reactiveValues(mycars = cars)
+      r <- reactiveValues(mycars = cars)
 
-    define_filters(input,
-                   "tbl_cars",
-                   c(sel_manufacturer = "manufacturer",
-                     sel_year = "year",
-                     sel_fuel = "fuel",
-                     sel_condition = "condition",
-                     sel_size = "size",
-                     sel_transmission = "transmission",
-                     sel_color = "paint_color",
-                     sel_type = "type"),
-                   cars)
-
-
-    observeEvent(input$ev_click, {
-      r$mycars <- update_filters(input, session, "tbl_cars")
-      update_tooltips("tbl_cars",
-                      session,
-                      tooltips = TRUE,
-                      title_avail = "Available is:",
-                      title_nonavail = "Currently not available is:",
-                      popover_title = "My filters",
-                      max.avail = 10,
-                      max.nonavail = 10)
-    })
+      define_filters(input,
+                     "tbl_cars",
+                     c(sel_manufacturer = "manufacturer",
+                       sel_year = "year",
+                       sel_fuel = "fuel",
+                       sel_condition = "condition",
+                       sel_size = "size",
+                       sel_transmission = "transmission",
+                       sel_color = "paint_color",
+                       sel_type = "type"),
+                     cars)
 
 
-    output$tbl_cars <- renderReactable({
-      reactable(data = r$mycars,
-                filterable = TRUE,
-                rownames = FALSE,
-                selection = "multiple",
-                showPageSizeOptions = TRUE,
-                paginationType = "jump",
-                showSortable = TRUE,
-                highlight = TRUE,
-                resizable = TRUE,
-                rowStyle = list(cursor = "pointer"),
-                onClick = "select"
-      )
-    })
+      observeEvent(input$ev_click, {
+        r$mycars <- update_filters(input, session, "tbl_cars")
+        update_tooltips("tbl_cars",
+                        session,
+                        tooltips = TRUE,
+                        title_avail = "Available is:",
+                        title_nonavail = "Currently not available is:",
+                        popover_title = "My filters",
+                        max.avail = 10,
+                        max.nonavail = 10)
+      })
 
-  }
- )
 
- \dontrun{
+      output$tbl_cars <- renderReactable({
+        reactable(data = r$mycars,
+                  filterable = TRUE,
+                  rownames = FALSE,
+                  selection = "multiple",
+                  showPageSizeOptions = TRUE,
+                  paginationType = "jump",
+                  showSortable = TRUE,
+                  highlight = TRUE,
+                  resizable = TRUE,
+                  rowStyle = list(cursor = "pointer"),
+                  onClick = "select"
+        )
+      })
+
+    }
+   )
+
    runApp(app)
  }
 
