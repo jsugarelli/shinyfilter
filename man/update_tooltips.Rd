@@ -85,4 +85,9 @@ For a full example of a shiny app using \code{shinyfilter} please
   \code{README.md} file or the GitHub repo on
   \href{https://github.com/jsugarelli/shinyfilter}{https://github.com/jsugarelli/shinyfilter}
    for a comprehensive \code{shinyfilter} tutorial.
+
+  \bold{Tip}: If your tooltips/popovers do not show up, attach the
+  \code{shinyBS} package directly in your Shiny app by adding
+  \code{library(shinyBS)} to your code. The \code{shinyBS} package is used to
+  create the tooltips and popovers.
 }

@@ -6,7 +6,7 @@ Description: Allows to connect 'selectizeInputs' widgets as filters to a 'reacta
   filter only shows the values that are really available at the moment based on 
   the current selection in other filters. Filter values currently not available 
   (and also those being available) can be shown via popovers or tooltips.
-Version: 0.1.0
+Version: 0.1.1
 Authors@R: person("Joachim", "Zuckarelli", role = c("aut", "cre"), email = "joachim@zuckarelli.de", comment = c(ORCID="0000-0002-9280-3016"))
 Maintainer: Joachim Zuckarelli <joachim@zuckarelli.de>
 Depends: R (>= 3.5.0)

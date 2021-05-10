@@ -7,7 +7,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-![](../man/figures/shinyfilter.png)
+![](../man/figures/logo.png)
 
 ## What *shinyfilter* does
 
@@ -128,14 +128,17 @@ In the server function you need to do three things:
     ```{r eval =  FALSE}
     observeEvent(input$ev_click, {
       r$mycars <- update_filters(input, session, "tbl_cars")
-      update_tooltips("tbl_cars", 
+      update_tooltips("tbl_cars",
+                      tooltip = TRUE,
                       session, 
                       title_avail = "Available is:", 
                       title_nonavail = "Currently not available is:",
-                      max.avail = 10,
-                      max.nonavail = 10)      
+                      max_avail = 10,
+                      max_nonavail = 10)      
     })
     ```    
+
+If your tooltips/popovers are not visible attach the `shinyBS` package directly in your Shiny app by adding `library(shinyBS)` to your code. The `shinyBS` package is used to create the tooltips and popovers.
 
 
 ### Full code of the example application
@@ -159,7 +162,7 @@ ui <- fluidPage(
                 titlePanel("Cars Database"),
                 sidebarLayout(
                   sidebarPanel(
-                    width = 2
+                    width = 2,
                     
                     selectizeInput(inputId = "sel_manufacturer", label = "Manufacturer",
                                    multiple = TRUE, options = list(onChange = event("ev_click")),
@@ -227,8 +230,8 @@ server <- function(input, output, session) {
                     title_avail = "Available is:", 
                     title_nonavail = "Currently not available is:",
                     popover_title = "My filters",
-                    max.avail = 10,
-                    max.nonavail = 10)
+                    max_avail = 10,
+                    max_nonavail = 10)
   })
  
 

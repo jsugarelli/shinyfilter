@@ -125,17 +125,21 @@ In the server function you need to do three things:
     If you want to show popovers instead of tooltips you need to set the `tooltips` argument of `update_tooltips()` to `FALSE`. In this case you can specify an additional `popover_title`.
 
     In our example, embedded in the `observeEvent()` call, this could look like this:
+    
     ```{r eval =  FALSE}
     observeEvent(input$ev_click, {
       r$mycars <- update_filters(input, session, "tbl_cars")
       update_tooltips("tbl_cars", 
                       session, 
+                      tooltip = TRUE, 
                       title_avail = "Available is:", 
                       title_nonavail = "Currently not available is:",
-                      max.avail = 10,
-                      max.nonavail = 10)      
+                      max_avail = 10,
+                      max_nonavail = 10)      
     })
     ```    
+
+If your tooltips/popovers are not visible attach the `shinyBS` package directly in your Shiny app by adding `library(shinyBS)` to your code. The `shinyBS` package is used to create the tooltips and popovers.
 
 
 ### Full code of the example application
@@ -159,7 +163,7 @@ ui <- fluidPage(
                 titlePanel("Cars Database"),
                 sidebarLayout(
                   sidebarPanel(
-                    width = 2
+                    width = 2,
                     
                     selectizeInput(inputId = "sel_manufacturer", label = "Manufacturer",
                                    multiple = TRUE, options = list(onChange = event("ev_click")),
@@ -223,12 +227,12 @@ server <- function(input, output, session) {
     r$mycars <- update_filters(input, session, "tbl_cars")
     update_tooltips("tbl_cars", 
                     session, 
-                    tooltips = TRUE, 
+                    tooltip = TRUE, 
                     title_avail = "Available is:", 
                     title_nonavail = "Currently not available is:",
                     popover_title = "My filters",
-                    max.avail = 10,
-                    max.nonavail = 10)
+                    max_avail = 10,
+                    max_nonavail = 10)
   })
  
 

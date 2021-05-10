@@ -1,3 +1,8 @@
+# Set up environment to store temporary data
+shinyfilterenv <- new.env(parent = emptyenv())
+
+
+
 ifnull <- function(arg) {
   if(is.null(arg)) return("")
   else return(arg)
@@ -43,6 +48,12 @@ event <- function(name) {
 
 
 
+filter_exists <- function() {
+  return(exists("shinyfilter.r", envir = shinyfilterenv))
+}
+
+
+
 #' @title Define the set of interdependent filters
 #'
 #' @description Installs the filters and binds them to the \code{reactable}
@@ -79,8 +90,8 @@ define_filters <- function(input, react_id, filters, data) {
   }
   names(cur_sel) <- names(filters)
 
-  if(exists("shinyfilters.r", envir=parent.env(environment()))) {
-    sf <- shiny::isolate(shiny::reactiveValuesToList(get("shinyfilters.r", envir=parent.env(environment()))))
+  if(filter_exists()) {
+    sf <- shiny::isolate(shiny::reactiveValuesToList(get("shinyfilters.r", envir = shinyfilterenv)))
     if(react_id %in% names(sf$filters.internal)) nxt <- which(names(sf$filters.internal) == react_id)[1]
     else nxt <- length(sf$filters.internal) + 1
     filters.internal <- sf$filters.internal
@@ -93,7 +104,7 @@ define_filters <- function(input, react_id, filters, data) {
     names(filters.internal)[1] <- react_id
   }
   sf.list <- shiny::reactiveValues(filters.internal = filters.internal)
-  assign("shinyfilters.r", sf.list, envir= parent.env(environment()))
+  assign("shinyfilters.r", sf.list, envir = shinyfilterenv)
 }
 
 
@@ -202,12 +213,12 @@ define_filters <- function(input, react_id, filters, data) {
 #'         r$mycars <- update_filters(input, session, "tbl_cars")
 #'         update_tooltips("tbl_cars",
 #'                         session,
-#'                         tooltips = TRUE,
+#'                         tooltip = TRUE,
 #'                         title_avail = "Available is:",
 #'                         title_nonavail = "Currently not available is:",
 #'                         popover_title = "My filters",
-#'                         max.avail = 10,
-#'                         max.nonavail = 10)
+#'                         max_avail = 10,
+#'                         max_nonavail = 10)
 #'       })
 #'
 #'
@@ -234,7 +245,7 @@ define_filters <- function(input, react_id, filters, data) {
 #'
 #' @export
 update_filters <- function(input, session, react_id) {
-  sf.list <- shiny::isolate(shiny::reactiveValuesToList(get("shinyfilters.r", envir=parent.env(environment()))))
+  sf.list <- shiny::isolate(shiny::reactiveValuesToList(get("shinyfilters.r", envir = shinyfilterenv)))
   sf <- sf.list$filters.internal[[react_id]]
   data.new <- sf$data
   change <- c(rep(FALSE, NROW(sf$filters)))
@@ -266,7 +277,7 @@ update_filters <- function(input, session, react_id) {
 
   sf.list$filters.internal[[react_id]] <- sf
   sfx <- shiny::reactiveValues(filters.internal = sf.list$filters.internal)
-  assign("shinyfilters.r", sfx, envir=parent.env(environment()))
+  assign("shinyfilters.r", sfx, envir = shinyfilterenv)
   return(data.new)
 }
 
@@ -327,12 +338,17 @@ update_filters <- function(input, session, react_id) {
 #'   \href{https://github.com/jsugarelli/shinyfilter}{https://github.com/jsugarelli/shinyfilter}
 #'    for a comprehensive \code{shinyfilter} tutorial.
 #'
+#'   \bold{Tip}: If your tooltips/popovers are not visible attach the
+#'   \code{shinyBS} package directly in your Shiny app by adding
+#'   \code{library(shinyBS)} to your code. The \code{shinyBS} package is used to
+#'   create the tooltips and popovers.
+#'
 #' @export
 update_tooltips <- function(react_id, session, tooltip = TRUE, show_avail = TRUE, title_avail = "Available values:",
                             title_nonavail = "Currently not available filters:", popover_title = "Filter options",
                             max_avail = NULL, max_nonavail = max_avail, more_avail = "... (# more)",
                             more_nonavail = "... (# more)", placement = "top") {
-  sf.list <- shiny::isolate(shiny::reactiveValuesToList(get("shinyfilters.r", envir=parent.env(environment()))))
+  sf.list <- shiny::isolate(shiny::reactiveValuesToList(get("shinyfilters.r", envir = shinyfilterenv)))
   sf <- sf.list$filters.internal[[react_id]]
   avail <- sf$avail
   non.avail <- sf$non.avail
@@ -400,6 +416,12 @@ update_tooltips <- function(react_id, session, tooltip = TRUE, show_avail = TRUE
 #'   \href{https://github.com/jsugarelli/shinyfilter}{https://github.com/jsugarelli/shinyfilter}
 #'    for a comprehensive \code{shinyfilter} tutorial.
 #'
+#'   \bold{Tip}: If your tooltips/popovers are not visible attach the
+#'   \code{shinyBS} package directly in your Shiny app by adding
+#'   \code{library(shinyBS)} to your code. The \code{shinyBS} package is used to
+#'   create the tooltips and popovers.
+#'
+#'
 #' @export
 use_tooltips <- function(background = "#000000", foreground = "#FFFFFF", textalign = "left",
                          fontsize = "100%", opacity = 0.8) {
@@ -418,7 +440,14 @@ use_tooltips <- function(background = "#000000", foreground = "#FFFFFF", textali
         ".tooltip.left > .tooltip-arrow" = paste0("border-left-color: ", background)
       )
     ),
-    shinyBS::bsTooltip(paste0("X", as.integer(stats::runif(1)*10000000)), "", placement = "bottom", trigger = "hover")
+    shinyBS::bsTooltip(paste0("X", as.integer(stats::runif(1)*10000000)), "", placement = "bottom", trigger = "hover", options = list(html = TRUE))
   )
   return(res)
+}
+
+
+
+.onUnload <- function(libname) {
+  rm("shinyfilter.r", envir = shinyfilterenv)
+  rm(shinyfilterenv)
 }

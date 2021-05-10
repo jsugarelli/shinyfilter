@@ -27,26 +27,26 @@ console to install the package including all packages it depends on.
 
 In your user interface:
 
-  - add the `selectizeInput` widgets that will serve as filters for the
+-   add the `selectizeInput` widgets that will serve as filters for the
     `reactable` table; make sure they all have their `onChange` property
     set to the same input variable
-  - add the `reactable` table to present your data
-  - if you want to use tooltips or popovers to show the currently
+-   add the `reactable` table to present your data
+-   if you want to use tooltips or popovers to show the currently
     (un)available filter options (given the current filter selection in
     all filters together), call `use_tooltips()` (and change the
     appearance of the tooltips or popovers, if you like)
 
 In your server function:
 
-  - call `define_filters()` to configure which `selectizeInput` widget
+-   call `define_filters()` to configure which `selectizeInput` widget
     will filter which column of your table
-  - handle the `onChange` event of the `selectizeInput` widgets with
+-   handle the `onChange` event of the `selectizeInput` widgets with
     `observeEvent()`:
-      - call `update_filters()` to update the filter values;
+    -   call `update_filters()` to update the filter values;
         `update_filters()` will return the ‘new’, filtered dataframe.
         Ideally, this is captured in a reactive value so that the
         `reactable` updates automatically
-      - if you want to work with tooltips or popovers, call
+    -   if you want to work with tooltips or popovers, call
         `update_tooltips()`
 
 ### Comprehensive tutorial
@@ -71,14 +71,14 @@ the UI.
     `event()` is the name of the input value that you can process in the
     server function of your application using `observeEvent()` (more on
     that further down below).
-    
+
     In our example, two filter widgets could then look like this:
-    
+
     ``` r
     selectizeInput(inputId = "sel_manufacturer", label = "Manufacturer",
                    multiple = TRUE, options = list(onChange = event("ev_click")),
                    choices = sort(unique(cars$manufacturer)))
-    
+
     selectizeInput(inputId = "sel_fuel", label = "Fuel",
                    multiple = TRUE, options = list(onChange = event("ev_click")),
                    choices = sort(unique(cars$fuel))),
@@ -93,7 +93,7 @@ the UI.
     `textalign`ment (default: left), the `fontsize` (default: 100%) and
     the `opacity` (default: 0.8). A call of `use_tooltips()` could look
     like this:
-    
+
     ``` r
     use_tooltips(background = "#1B3F8C", foreground = "#FFFFFF")
     ```
@@ -108,19 +108,19 @@ In the server function you need to do three things:
 1.  Call `define_filters()` to bind the filters to the columns of the
     dataframe you are presenting in the `reactable`. The arguments of
     `define_filters()` are the following:
-    
-      - the `input` argument provided to the server function of your
+
+    -   the `input` argument provided to the server function of your
         application
-      - the `inputId` of the `reactable`
-      - a named vector of the columns of the dataframe that will be
+    -   the `inputId` of the `reactable`
+    -   a named vector of the columns of the dataframe that will be
         filtered; the names of the vector elements are the `inputId`s of
         the `selectizeInput` widgets that represent the filters
-      - the dataframe shown in the reactable
-    
+    -   the dataframe shown in the reactable
+
     A call of `define_filters()` in our example could look this
     (assuming, the dataframe which is presented in the reactable is
     called `cars` and the `reactable` itself is named `tbl_cars`):
-    
+
     ``` r
     define_filters(input,
                   "tbl_cars",
@@ -136,16 +136,16 @@ In the server function you need to do three things:
     arguments of the server function), and the `inputId` of the
     `reactable` as arguments. `update_filters()` will return a filtered
     dataframe that can be used to update your `reactable`.
-    
+
     In our example, the data for the `reactable` is stored in a reactive
     object `r` which had been created with:
-    
+
     ``` r
     r <- reactiveValues(mycars = cars)
     ```
-    
+
     The `reactable` is rendered based on this data:
-    
+
     ``` r
     output$tbl_cars <- renderReactable({
       reactable(data = r$mycars,
@@ -162,16 +162,16 @@ In the server function you need to do three things:
       )
     })    
     ```
-    
+
     To update the `reactable` we only need to assign the return value of
     `update_filters()` to the reactive variable:
-    
+
     ``` r
     r$mycars <- update_filters(input, session, "tbl_cars")
     ```
-    
+
     So far, the `observeEvent()` call looks like this:
-    
+
     ``` r
     observeEvent(input$ev_click, {
       r$mycars <- update_filters(input, session, "tbl_cars")
@@ -193,23 +193,24 @@ In the server function you need to do three things:
     a placeholder for the number of values not shown any more. You can
     provide any text you like and use `#` to show the number of filter
     options not listed in the tooltip/popover.
-    
+
     If you want to show popovers instead of tooltips you need to set the
     `tooltips` argument of `update_tooltips()` to `FALSE`. In this case
     you can specify an additional `popover_title`.
-    
+
     In our example, embedded in the `observeEvent()` call, this could
     look like this:
-    
+
     ``` r
     observeEvent(input$ev_click, {
       r$mycars <- update_filters(input, session, "tbl_cars")
       update_tooltips("tbl_cars", 
                       session, 
+                      tooltip = TRUE, 
                       title_avail = "Available is:", 
                       title_nonavail = "Currently not available is:",
-                      max.avail = 10,
-                      max.nonavail = 10)      
+                      max_avail = 10,
+                      max_nonavail = 10)      
     })
     ```
 
@@ -234,7 +235,7 @@ ui <- fluidPage(
                 titlePanel("Cars Database"),
                 sidebarLayout(
                   sidebarPanel(
-                    width = 2
+                    width = 2,
                     
                     selectizeInput(inputId = "sel_manufacturer", label = "Manufacturer",
                                    multiple = TRUE, options = list(onChange = event("ev_click")),
@@ -298,12 +299,12 @@ server <- function(input, output, session) {
     r$mycars <- update_filters(input, session, "tbl_cars")
     update_tooltips("tbl_cars", 
                     session, 
-                    tooltips = TRUE, 
+                    tooltip = TRUE, 
                     title_avail = "Available is:", 
                     title_nonavail = "Currently not available is:",
                     popover_title = "My filters",
-                    max.avail = 10,
-                    max.nonavail = 10)
+                    max_avail = 10,
+                    max_nonavail = 10)
   })
  
 

@@ -112,12 +112,12 @@ if(interactive()) {
         r$mycars <- update_filters(input, session, "tbl_cars")
         update_tooltips("tbl_cars",
                         session,
-                        tooltips = TRUE,
+                        tooltip = TRUE,
                         title_avail = "Available is:",
                         title_nonavail = "Currently not available is:",
                         popover_title = "My filters",
-                        max.avail = 10,
-                        max.nonavail = 10)
+                        max_avail = 10,
+                        max_nonavail = 10)
       })
 
 
